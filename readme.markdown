@@ -1,4 +1,4 @@
 Run the server:
 ```console
-$ npm start
+$ npm run build && npm start
 ```
