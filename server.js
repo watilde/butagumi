@@ -1,14 +1,13 @@
 const readFileSync = require('fs').readFileSync
 const createServer = require('http').createServer
 const toUint8Array = require('./lib/toUint8Array')
-const compileWebAssembly = (data, cb) => {
+const compileWebAssembly = (data) => {
   const buffer = toUint8Array(data)
   return WebAssembly.compile(buffer)
 }
 
 const server = createServer((req, res) => {
   const url = req.url
-  const body = req.body
   if (url === '/') {
     res.writeHead(200, { 'Content-Type': 'text/html' })
     res.write(readFileSync('./index.html'))
@@ -18,7 +17,7 @@ const server = createServer((req, res) => {
     res.write(readFileSync('./hello_world.wasm'))
     res.end()
   } else if (url === '/api/compile') {
-    const chunks = [];
+    const chunks = []
     res.writeHead(200, { 'Content-Type': 'text/plain' })
     req.on('data', chunk => chunks.push(chunk))
     req.on('end', () => {
@@ -26,7 +25,8 @@ const server = createServer((req, res) => {
         res.write(mod)
         res.end()
       }).catch((e) => {
-        res.end('compile error')
+        console.error(e)
+        res.end()
       })
     })
   }
