@@ -1,0 +1,23 @@
+{
+  "name": "butagumi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "prestart": "npm run build",
+    "start": "node server.js",
+    "poststart": "open http://localhost:1337/",
+    "build": "emcc hello_world.c -Os -s WASM=1 -s SIDE_MODULE=1 -o hello_world.wasm"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/watilde/butagumi.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/watilde/butagumi/issues"
+  },
+  "homepage": "https://github.com/watilde/butagumi#readme"
+}

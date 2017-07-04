@@ -1,0 +1,48 @@
+<!-- based on https://gist.github.com/kripken/59c67556dc03bb6d57052fedef1e61ab -->
+<html>
+<body>
+  <input type='button' id='run' value='(waiting for WebAssembly)' />
+  <script>
+  function load (imports) {
+    return fetch('http://localhost:1337/simple.wasm')
+      .then(response => response.arrayBuffer())
+      .then((bytes) => {
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', 'http://localhost:1337/api/compile', true);
+        xhr.onreadystatechange = function() {
+          if(xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+            return xhr.responseText
+          }
+        }
+        xhr.send('bytes=' + bytes);
+      })
+      .then(module => {
+        imports = imports || {};
+        imports.env = imports.env || {};
+        imports.env.memoryBase = imports.env.memoryBase || 0
+        imports.env.tableBase = imports.env.tableBase || 0
+        if (!imports.env.memory) {
+          imports.env.memory = new WebAssembly.Memory({ initial: 256 })
+        }
+        if (!imports.env.table) {
+          imports.env.table = new WebAssembly.Table({ initial: 0, element: 'anyfunc' })
+        }
+        return new WebAssembly.Instance(module, imports)
+      })
+  }
+
+  load()
+    .then(instance => {
+      var exports = instance.exports
+      var doubler = exports._doubler
+      var button = document.getElementById('run')
+      button.value = 'Call a method in the WebAssembly module'
+      button.addEventListener('click', function() {
+        const input = 21
+        alert(input + ' doubled is ' + doubler(input))
+      }, false)
+    }
+  )
+  </script>
+</body>
+</html>
