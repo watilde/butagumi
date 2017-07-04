@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "prestart": "npm run build",
-    "start": "node server.js",
-    "poststart": "open http://localhost:1337/",
+    "start": "open http://localhost:1337/",
+    "poststart": "node server.js",
     "build": "emcc hello_world.c -Os -s WASM=1 -s SIDE_MODULE=1 -o hello_world.wasm"
   },
   "repository": {
