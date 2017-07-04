@@ -1,5 +1,5 @@
-const { readFileSync } = require('fs')
-const { createServer } = require('http')
+const readFileSync = require('fs').readFileSync
+const createServer = require('http').createServer
 const toUint8Array = require('./lib/toUint8Array')
 const compileWebAssembly = (data, cb) => {
   const buffer = toUint8Array(data)
@@ -7,14 +7,15 @@ const compileWebAssembly = (data, cb) => {
 }
 
 const server = createServer((req, res) => {
-  const { url, body } = req
+  const url = req.url
+  const body = req.body
   if (url === '/') {
     res.writeHead(200, { 'Content-Type': 'text/html' })
     res.write(readFileSync('./index.html'))
     res.end()
-  } else if (url === '/simple.wasm') {
+  } else if (url === '/hello_world.wasm') {
     res.writeHead(200, { 'Content-Type': 'text/plain' })
-    res.write(readFileSync('./addTwo.wast'))
+    res.write(readFileSync('./hello_world.wasm'))
     res.end()
   } else if (url === '/api/compile') {
     const chunks = [];

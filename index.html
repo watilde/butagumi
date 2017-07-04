@@ -4,7 +4,7 @@
   <input type='button' id='run' value='(waiting for WebAssembly)' />
   <script>
   function load (imports) {
-    return fetch('http://localhost:1337/simple.wasm')
+    return fetch('http://localhost:1337/hello_world.wasm')
       .then(response => response.arrayBuffer())
       .then((bytes) => {
         let xhr = new XMLHttpRequest()
