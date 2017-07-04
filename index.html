@@ -4,31 +4,33 @@
   <input type='button' id='run' value='(waiting for WebAssembly)' />
   <script>
   function load (imports) {
-    return fetch('http://localhost:1337/hello_world.wasm')
-      .then(response => response.arrayBuffer())
-      .then((bytes) => {
-        let xhr = new XMLHttpRequest()
-        xhr.open('POST', 'http://localhost:1337/api/compile', true)
-        xhr.onreadystatechange = function() {
-          if(xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
-            return xhr.responseText
+    return new Promise((resolve, reject) => {
+      fetch('http://localhost:1337/hello_world.wasm')
+        .then(response => response.arrayBuffer())
+        .then((bytes) => {
+          let xhr = new XMLHttpRequest()
+          xhr.open('POST', 'http://localhost:1337/api/compile', true)
+          xhr.onreadystatechange = function() {
+            if(xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+              resolve(xhr.responseText)
+            }
           }
-        }
-        xhr.send('bytes=' + bytes)
-      })
-      .then(module => {
-        imports = imports || {}
-        imports.env = imports.env || {}
-        imports.env.memoryBase = imports.env.memoryBase || 0
-        imports.env.tableBase = imports.env.tableBase || 0
-        if (!imports.env.memory) {
-          imports.env.memory = new WebAssembly.Memory({ initial: 256 })
-        }
-        if (!imports.env.table) {
-          imports.env.table = new WebAssembly.Table({ initial: 0, element: 'anyfunc' })
-        }
-        return new WebAssembly.Instance(module, imports)
-      })
+          xhr.send('bytes=' + bytes)
+        })
+    })
+    .then(module => {
+      imports = imports || {}
+      imports.env = imports.env || {}
+      imports.env.memoryBase = imports.env.memoryBase || 0
+      imports.env.tableBase = imports.env.tableBase || 0
+      if (!imports.env.memory) {
+        imports.env.memory = new WebAssembly.Memory({ initial: 256 })
+      }
+      if (!imports.env.table) {
+        imports.env.table = new WebAssembly.Table({ initial: 0, element: 'anyfunc' })
+      }
+      return new WebAssembly.Instance(module, imports)
+    })
   }
 
   load()
